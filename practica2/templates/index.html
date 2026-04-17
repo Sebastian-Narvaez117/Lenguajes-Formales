@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>App Lenguajes Formales</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-deep: #08111f;
+    --bg-mid: #0b1f35;
+    --panel: #102a43;
+    --panel-soft: #15395a;
+    --line: rgba(173, 216, 230, 0.18);
+    --text-main: #e8f1ff;
+    --text-soft: #bcd0e7;
+    --accent: #39d98a;
+    --accent-2: #32d3ff;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(50, 211, 255, 0.16), transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(57, 217, 138, 0.18), transparent 38%),
+        linear-gradient(140deg, var(--bg-deep), var(--bg-mid));
+    color: var(--text-main);
+    font-family: "Space Grotesk", sans-serif;
+}
+
+.navbar {
+    border-bottom: 1px solid var(--line);
+    background: rgba(2, 14, 27, 0.9) !important;
+    backdrop-filter: blur(6px);
+}
+
+.navbar-brand {
+    letter-spacing: 0.02em;
+    font-weight: 700;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid var(--line);
+}
+
+.nav-tabs .nav-link {
+    border: 0;
+    border-radius: 12px 12px 0 0;
+    color: var(--text-soft);
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--text-main);
+    background: rgba(50, 211, 255, 0.08);
+}
+
+.nav-tabs .nav-link.active {
+    color: #03111f;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+.card {
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(16, 42, 67, 0.94), rgba(11, 30, 49, 0.95)) !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+}
+
+.form-control {
+    background: rgba(6, 22, 38, 0.95);
+    border: 1px solid rgba(186, 219, 255, 0.18);
+    color: var(--text-main);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form-control:focus {
+    background: rgba(6, 22, 38, 0.95);
+    border-color: var(--accent-2);
+    color: var(--text-main);
+    box-shadow: 0 0 0 0.2rem rgba(50, 211, 255, 0.2);
+}
+
+.console-window {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(4, 18, 33, 0.92);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    animation: showUp 260ms ease;
+}
+
+.console-header {
+    background: rgba(7, 24, 41, 0.95);
+    color: var(--text-soft);
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+}
+
+.console-body {
+    margin: 0;
+    padding: 1rem;
+    color: #c8ffe9;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 140px;
+}
+
+.result-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    padding: 1rem;
+    min-height: 140px;
+    align-content: flex-start;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(50, 211, 255, 0.35);
+    background: rgba(8, 32, 51, 0.85);
+    color: #d8ecff;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(57, 217, 138, 0.68);
+}
+
+.chip.len-0 {
+    border-color: rgba(147, 112, 219, 0.5);
+    background: rgba(75, 0, 130, 0.3);
+}
+
+.chip.len-0:hover {
+    border-color: rgba(147, 112, 219, 0.8);
+}
+
+.chip.len-1 {
+    border-color: rgba(255, 140, 0, 0.5);
+    background: rgba(255, 100, 0, 0.15);
+}
+
+.chip.len-1:hover {
+    border-color: rgba(255, 140, 0, 0.8);
+}
+
+.chip.len-2 {
+    border-color: rgba(50, 211, 255, 0.5);
+    background: rgba(50, 211, 255, 0.15);
+}
+
+.chip.len-2:hover {
+    border-color: rgba(50, 211, 255, 0.9);
+}
+
+.chip.len-3plus {
+    border-color: rgba(57, 217, 138, 0.5);
+    background: rgba(57, 217, 138, 0.15);
+}
+
+.chip.len-3plus:hover {
+    border-color: rgba(57, 217, 138, 0.9);
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-title {
+    flex: 1;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.counter-badge {
+    background: rgba(50, 211, 255, 0.25);
+    border: 1px solid rgba(50, 211, 255, 0.6);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid rgba(57, 217, 138, 0.4);
+    color: rgba(57, 217, 138, 0.8);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.copy-btn:hover {
+    background: rgba(57, 217, 138, 0.15);
+    border-color: rgba(57, 217, 138, 0.8);
+    color: rgba(57, 217, 138, 1);
+}
+
+.copy-btn.copied {
+    color: #39d98a;
+    border-color: #39d98a;
+}
+
+.growth-grid {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.growth-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(7, 24, 41, 0.68);
+    padding: 0.9rem;
+}
+
+.growth-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.7rem;
+}
+
+.growth-title {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.result-chips.compact {
+    min-height: auto;
+    padding: 0;
+}
+
+@keyframes showUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+
+    .d-flex.gap-2 .btn {
+        flex: 1 1 48%;
+    }
+
+    .chip {
+        font-size: 0.85rem;
+    }
+
+    .growth-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-black shadow">
+    <div class="container-fluid">
+        <span class="navbar-brand">Lenguajes Formales</span>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <!-- TABS -->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <button class="nav-link {{ 'active' if active_tab=='generar' else '' }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#generar">
+                Generar
+            </button>
+        </li>
+    
+        <li class="nav-item">
+            <button class="nav-link {{ 'active' if active_tab=='operaciones' else '' }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#operaciones">
+                Operaciones
+            </button>
+        </li>
+    
+        <li class="nav-item">
+            <button class="nav-link {{ 'active' if active_tab=='kleene' else '' }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#kleene">
+                Kleene
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <!-- GENERAR -->
+        <div class="tab-pane fade {{ 'show active' if active_tab=='generar' else '' }}" id="generar">
+            <div class="card p-4 bg-secondary"> 
+                <form method="POST"> <input type="hidden" name="operacion" value="generar"> 
+                    <input name="L1" class="form-control mb-2" value="{{datos.L1}}" placeholder="Alfabeto (a,b)">
+                    <input name="n" class="form-control mb-2" value="{{datos.n}}" placeholder="Longitud">
+                    <button class="btn btn-primary w-100">Generar cadenas</button> 
+                </form>
+            </div> 
+        </div>
+    
+       
+
+
+
+        <!-- OPERACIONES -->
+        <div class="tab-pane fade {{ 'show active' if active_tab=='operaciones' else '' }}" id="operaciones">
+            <div class="card p-4 bg-secondary">
+                <form method="POST">
+
+                    <input name="L1" class="form-control mb-2" value="{{ datos.L1 }}" placeholder="Lenguaje 1">
+                    <input name="L2" class="form-control mb-2" value="{{datos.L2}}" placeholder="Lenguaje 2">
+                    <input name="cadena" class="form-control mb-2" value="{{datos.cadena}}" placeholder="Cadena">
+
+                    <div class="d-flex gap-2">
+                        <button name="operacion" value="pertenece" class="btn btn-success">Pertenece</button>
+                        <button name="operacion" value="union" class="btn btn-warning">Unión</button>
+                        <button name="operacion" value="concat" class="btn btn-info">Concatenación</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- KLEENE -->
+        <div class="tab-pane fade {{ 'show active' if active_tab=='kleene' else '' }}" id="kleene">
+            <div class="card p-4 bg-secondary">
+                <form method="POST">
+
+                    <input name="L1" class="form-control mb-2" value="{{datos.L1}}" placeholder="Lenguaje">
+                    <input name="n" class="form-control mb-2" value="{{datos.n}}" placeholder="Iteraciones">
+
+                    <div class="d-flex gap-2">
+                        <button name="operacion" value="kleene" class="btn btn-danger">Kleene *</button>
+                        <button name="operacion" value="plus" class="btn btn-light">Kleene +</button>
+                        <button name="operacion" value="crecimiento" class="btn btn-primary">Analizar crecimiento</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="console-window mt-4">
+        <div class="console-header">
+            <div class="header-title">Resultado</div>
+            {% if resultado_lista %}
+            <div class="header-controls">
+                <span class="counter-badge">{{ resultado_lista|length }} elementos</span>
+                <button class="copy-btn" onclick="copiarResultado(event)">Copiar</button>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if resultado_crecimiento %}
+            <div class="growth-grid">
+                {% for bloque in resultado_crecimiento %}
+                    <div class="growth-card">
+                        <div class="growth-card-header">
+                            <span class="growth-title">Iteración {{ bloque.iteracion }}</span>
+                            <span class="counter-badge">{{ bloque.cantidad }} elementos</span>
+                        </div>
+                        <div class="result-chips compact">
+                            {% for item in bloque.cadenas %}
+                                {% set len_class = 'len-0' if item.length == 0 else ('len-1' if item.length == 1 else ('len-2' if item.length == 2 else 'len-3plus')) %}
+                                <span class="chip {{ len_class }}" title="Longitud: {{ item.length }}">{{ item.text }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif resultado_lista %}
+            <div class="result-chips" id="resultChips">
+                {% for item in resultado_lista %}
+                    {% set len_class = 'len-0' if item.length == 0 else ('len-1' if item.length == 1 else ('len-2' if item.length == 2 else 'len-3plus')) %}
+                    <span class="chip {{ len_class }}" title="Longitud: {{ item.length }}">{{ item.text }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <pre class="console-body">{{ resultado }}</pre>
+        {% endif %}
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function copiarResultado(ev) {
+    const chips = document.querySelectorAll('.chip');
+    let texto = '[';
+    
+    chips.forEach((chip, idx) => {
+        if (idx > 0) texto += ', ';
+        texto += chip.textContent;
+    });
+    
+    texto += ']';
+    
+    navigator.clipboard.writeText(texto).then(() => {
+        const btn = ev.currentTarget;
+        const original = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+    });
+}
+</script>
+
+</body>
+</html>
